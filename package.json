@@ -1,12 +1,12 @@
 {
-  "name": "gleam",
-  "displayName": "Gleam",
-  "description": "Support for the Gleam programming language",
-  "version": "2.10.0",
-  "publisher": "gleam",
+  "name": "neit",
+  "displayName": "neit",
+  "description": "Support for the neit programming language",
+  "version": "0.0.0",
+  "publisher": "neit",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gleam-lang/vscode-gleam"
+    "url": "https://github.com/neit-lang/vscode-neit"
   },
   "engines": {
     "vscode": "^1.52.0"
@@ -20,69 +20,72 @@
   "contributes": {
     "languages": [
       {
-        "id": "gleam",
+        "id": "neit",
         "aliases": [
-          "Gleam",
-          "gleam"
+          "neit",
+          "neit"
         ],
         "extensions": [
-          ".gleam"
+          ".neit"
         ],
         "configuration": "./language-configuration.json",
         "icon": {
-          "light": "./images/gleam-logo.png",
-          "dark": "./images/gleam-logo.png"
+          "light": "./images/neit-logo.png",
+          "dark": "./images/neit-logo.png"
         }
       }
     ],
     "grammars": [
       {
-        "language": "gleam",
-        "scopeName": "source.gleam",
-        "path": "./syntaxes/gleam.tmLanguage.json"
+        "language": "neit",
+        "scopeName": "source.neit",
+        "path": "./syntaxes/neit.tmLanguage.json"
       },
       {
-        "scopeName": "markdown.gleam.codeblock",
-        "path": "./syntaxes/gleam.codeblock.json",
+        "scopeName": "markdown.neit.codeblock",
+        "path": "./syntaxes/neit.codeblock.json",
         "injectTo": [
           "text.html.markdown"
         ],
         "embeddedLanguages": {
-          "meta.embedded.block.gleam": "gleam"
+          "meta.embedded.block.neit": "neit"
         }
       }
     ],
     "snippets": [
       {
-        "language": "gleam",
+        "language": "neit",
         "path": "./snippets.json"
       }
     ],
     "commands": [
       {
-        "command": "gleam.restartServer",
-        "title": "Restart Gleam Server",
-        "category": "Gleam"
+        "command": "neit.restartServer",
+        "title": "Restart neit Server",
+        "category": "neit"
       }
     ],
     "configurationDefaults": {
-      "[gleam]": {
+      "[neit]": {
         "editor.formatOnSave": true
       }
     },
     "configuration": {
-      "title": "Gleam",
+      "title": "neit",
       "properties": {
-        "gleam.path": {
+        "neit.path": {
           "type": "string",
           "default": null,
-          "description": "A path to the gleam executable. By default, the extension looks for gleam in the PATH, but if set, will use the path specified instead.",
+          "description": "A path to the neit executable. By default, the extension looks for neit in the PATH, but if set, will use the path specified instead.",
           "scope": "machine"
         }
       }
     }
   },
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:nsc",
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "scripts": {
     "vscode:prepublish": "webpack --mode production",

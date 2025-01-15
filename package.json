@@ -1,9 +1,9 @@
 {
   "name": "neit",
-  "displayName": "neit",
-  "description": "Support for the neit programming language",
-  "version": "0.0.0",
-  "publisher": "neit",
+  "displayName": "Neit",
+  "description": "Support for the Neit programming language",
+  "version": "0.1.2",
+  "publisher": "OxumLabs",
   "repository": {
     "type": "git",
     "url": "https://github.com/neit-lang/vscode-neit"
@@ -18,16 +18,18 @@
   ],
   "icon": "images/icon.png",
   "contributes": {
+    "themes": [
+      {
+
+        "label": "Neit Language Theme",
+        "path": "./theme.json"
+      }
+    ],
     "languages": [
       {
         "id": "neit",
-        "aliases": [
-          "neit",
-          "neit"
-        ],
-        "extensions": [
-          ".neit"
-        ],
+        "aliases": ["neit"],
+        "extensions": [".nsc"],
         "configuration": "./language-configuration.json",
         "icon": {
           "light": "./images/neit-logo.png",
@@ -44,9 +46,7 @@
       {
         "scopeName": "markdown.neit.codeblock",
         "path": "./syntaxes/neit.codeblock.json",
-        "injectTo": [
-          "text.html.markdown"
-        ],
+        "injectTo": ["text.html.markdown"],
         "embeddedLanguages": {
           "meta.embedded.block.neit": "neit"
         }
@@ -61,8 +61,8 @@
     "commands": [
       {
         "command": "neit.restartServer",
-        "title": "Restart neit Server",
-        "category": "neit"
+        "title": "Restart Neit Server",
+        "category": "Neit"
       }
     ],
     "configurationDefaults": {
@@ -71,20 +71,19 @@
       }
     },
     "configuration": {
-      "title": "neit",
+      "title": "Neit",
       "properties": {
         "neit.path": {
           "type": "string",
           "default": null,
-          "description": "A path to the neit executable. By default, the extension looks for neit in the PATH, but if set, will use the path specified instead.",
+          "description": "A path to the Neit executable. By default, the extension looks for Neit in the PATH, but if set, will use the path specified instead.",
           "scope": "machine"
         }
       }
     }
   },
   "activationEvents": [
-    "onLanguage:nsc",
-    "onStartupFinished"
+    "onFileSystem:*.nsc"
   ],
   "main": "./out/extension.js",
   "scripts": {

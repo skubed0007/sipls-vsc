@@ -1,5 +1,5 @@
 {
-  "fileTypes": [],
+  "fileTypes": ["nsc"],
   "injectionSelector": "L:text.html.markdown",
   "patterns": [
     {

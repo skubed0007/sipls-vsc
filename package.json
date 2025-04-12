@@ -95,9 +95,10 @@
     "prettier": "^3.0.1",
     "ts-loader": "^8.0.13",
     "typescript": "^5.3.2",
-    "vscode-test": "^2.3.9",
     "webpack": "^5.76.0",
-    "webpack-cli": "^4.9.2"
+    "webpack-cli": "^4.9.2",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1"
   },
   "dependencies": {
     "vscode-languageclient": "^8.1.0"

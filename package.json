@@ -1,15 +1,15 @@
 {
-  "name": "neit",
-  "displayName": "Neit",
-  "description": "Support for the Neit programming language",
-  "version": "0.1.2",
+  "name": "sip-lang",
+  "displayName": "SIP Language",
+  "description": "SIP language support for VS Code",
+  "version": "0.0.1",
   "publisher": "OxumLabs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/neit-lang/vscode-neit"
+    "url": "https://github.com/skubed0007/sipls-vsc"
   },
   "engines": {
-    "vscode": "^1.52.0"
+    "vscode": "^1.85.0"
   },
   "categories": [
     "Programming Languages",
@@ -20,96 +20,82 @@
   "contributes": {
     "themes": [
       {
-
-        "label": "Neit Language Theme",
-        "path": "./theme.json"
+        "label": "SIP Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/sip-dark-color-theme.json"
       }
     ],
     "languages": [
       {
-        "id": "neit",
-        "aliases": ["neit"],
-        "extensions": [".nsc"],
+        "id": "sip",
+        "aliases": [
+          "SIP",
+          "sip"
+        ],
+        "extensions": [
+          ".sip"
+        ],
         "configuration": "./language-configuration.json",
         "icon": {
-          "light": "./images/neit-logo.png",
-          "dark": "./images/neit-logo.png"
+          "light": "./images/sip-logo.png",
+          "dark": "./images/sip-logo.png"
         }
       }
     ],
     "grammars": [
       {
-        "language": "neit",
-        "scopeName": "source.neit",
-        "path": "./syntaxes/neit.tmLanguage.json"
+        "language": "sip",
+        "scopeName": "source.sip",
+        "path": "./syntaxes/sip.tmLanguage.json"
       },
       {
-        "scopeName": "markdown.neit.codeblock",
-        "path": "./syntaxes/neit.codeblock.json",
+        "scopeName": "markdown.sip.codeblock",
+        "path": "./syntaxes/sip.codeblock.json",
         "injectTo": ["text.html.markdown"],
         "embeddedLanguages": {
-          "meta.embedded.block.neit": "neit"
+          "meta.embedded.block.sip": "sip"
         }
       }
     ],
     "snippets": [
       {
-        "language": "neit",
-        "path": "./snippets.json"
-      }
-    ],
-    "commands": [
-      {
-        "command": "neit.restartServer",
-        "title": "Restart Neit Server",
-        "category": "Neit"
+        "language": "sip",
+        "path": "./snippets/sip.code-snippets"
       }
     ],
     "configurationDefaults": {
-      "[neit]": {
+      "[sip]": {
         "editor.formatOnSave": true
-      }
-    },
-    "configuration": {
-      "title": "Neit",
-      "properties": {
-        "neit.path": {
-          "type": "string",
-          "default": null,
-          "description": "A path to the Neit executable. By default, the extension looks for Neit in the PATH, but if set, will use the path specified instead.",
-          "scope": "machine"
-        }
       }
     }
   },
   "activationEvents": [
-    "onFileSystem:*.nsc"
+    "onLanguage:sip"
   ],
   "main": "./out/extension.js",
   "scripts": {
-    "vscode:prepublish": "webpack --mode production",
-    "compile": "webpack --mode development",
-    "compile-watch": "webpack --mode development --watch",
-    "test-compile": "tsc -p ./",
-    "vscode:package": "vsce package",
-    "format-check": "prettier ./**/*.ts --check",
-    "format": "prettier ./**/*.ts --write --cache"
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./ --incremental",
+    "watch": "tsc -watch -p ./ --incremental",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts --cache",
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.0.4",
-    "@types/node": "^12.11.7",
-    "@types/vscode": "^1.52.0",
-    "@typescript-eslint/eslint-plugin": "^4.9.0",
-    "@typescript-eslint/parser": "^4.9.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
     "@vscode/vsce": "^2.29.0",
-    "eslint": "^7.15.0",
-    "glob": "^7.1.6",
-    "mocha": "^10.1.0",
+    "eslint": "^8.55.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
     "prettier": "^3.0.1",
     "ts-loader": "^8.0.13",
-    "typescript": "^4.1.2",
-    "vscode-test": "^1.4.1",
+    "typescript": "^5.3.2",
+    "vscode-test": "^2.3.9",
     "webpack": "^5.76.0",
     "webpack-cli": "^4.9.2"
   },

@@ -1,10 +1,10 @@
 {
   "comments": {
     // symbol used for single line comment. Remove this entry if your language does not support line comments
-    "lineComment": "#",
+    "lineComment": "//",
     "blockComment": [
-      "##",
-      "##"
+      "/*",
+      "*/"
     ]
   },
   // symbols used as brackets
@@ -19,7 +19,8 @@
     ["[", "]"],
     ["(", ")"],
     ["\"", "\""],
-    ["'", "'"]
+    ["'", "'"],
+    ["/*", "*/"]
   ],
   // symbols that that can be used to surround a selection
   "surroundingPairs": [
@@ -27,6 +28,7 @@
     ["[", "]"],
     ["(", ")"],
     ["\"", "\""],
-    ["'", "'"]
+    ["'", "'"],
+    ["/*", "*/"]
   ]
 }

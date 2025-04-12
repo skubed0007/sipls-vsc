@@ -1,0 +1,135 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "sip",
+  "scopeName": "source.sip",
+  "patterns": [
+    {
+      "name": "comment.line.sip",
+      "match": "//.*"
+    },
+    {
+      "name": "comment.block.sip",
+      "begin": "/\\*",
+      "end": "\\*/"
+    },
+    {
+      "name": "keyword.control.sip",
+      "match": "\\b(if|else|while|for|break|continue|return|ret)\\b"
+    },
+    {
+      "name": "keyword.declaration.sip",
+      "match": "\\b(let|fun|bring|struct|enum)\\b"
+    },
+    {
+      "name": "keyword.operator.sip",
+      "match": "\\b(and|or|not|in|is)\\b"
+    },
+    {
+      "name": "storage.type.sip",
+      "match": "\\b(i32|i64|f32|f64|nil)\\b"
+    },
+    {
+      "name": "keyword.special.sip",
+      "match": "@(c|ret)\\b"
+    },
+    {
+      "name": "import.statement.sip",
+      "match": "\\b(bring)\\s+\"([^\"]+)\"",
+      "captures": {
+        "1": { "name": "keyword.declaration.sip" },
+        "2": { "name": "string.quoted.double.sip" }
+      }
+    },
+    {
+      "name": "variable.language.sip",
+      "match": "\\b(let)\\s+([[:lower:]][[:alnum:]]*)\\s*@\\s*([[:alnum:]]+)\\s*=\\s*([^;]+)",
+      "captures": {
+        "1": { "name": "keyword.declaration.sip" },
+        "2": { "name": "variable.reference.sip" },
+        "3": { "name": "storage.type.sip" },
+        "4": { "name": "variable.assignment.sip" }
+      }
+    },
+    {
+      "name": "function.declaration.sip",
+      "begin": "\\b(fun)\\s+([[:lower:]][[:alnum:]]*)\\s*\\(",
+      "end": "\\)\\s*@\\s*([[:alnum:]]+)\\s*\\{",
+      "beginCaptures": {
+        "1": { "name": "keyword.declaration.sip" },
+        "2": { "name": "entity.name.function.sip" }
+      },
+      "endCaptures": {
+        "1": { "name": "storage.type.sip" }
+      },
+      "patterns": [
+        {
+          "name": "variable.parameter.sip",
+          "match": "([[:alnum:]]+)\\s+([[:lower:]][[:alnum:]]*)",
+          "captures": {
+            "1": { "name": "storage.type.sip" },
+            "2": { "name": "variable.parameter.sip" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "c.code.block.sip",
+      "begin": "@c\\s*\\{",
+      "end": "\\}",
+      "beginCaptures": {
+        "0": { "name": "keyword.special.sip" }
+      },
+      "patterns": [
+        {
+          "include": "source.c"
+        }
+      ]
+    },
+    {
+      "name": "constant.numeric.sip",
+      "match": "\\b\\d+(\\.\\d+)?\\b"
+    },
+    {
+      "name": "string.quoted.single.sip",
+      "begin": "'",
+      "end": "'",
+      "patterns": [
+        {
+          "name": "constant.character.escape.sip",
+          "match": "\\\\."
+        }
+      ]
+    },
+    {
+      "name": "string.quoted.double.sip",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.sip",
+          "match": "\\\\."
+        }
+      ]
+    },
+    {
+      "name": "entity.name.function.sip",
+      "match": "\\b([[:lower:]][[:alnum:]]*)\\s*(?=\\()"
+    },
+    {
+      "name": "variable.parameter.sip",
+      "match": "\\b([[:lower:]][[:alnum:]]*)\\s*(?=:)"
+    },
+    {
+      "name": "keyword.return-type.sip",
+      "match": "@ret\\s+[[:alnum:]]+"
+    },
+    {
+      "name": "punctuation.separator.sip",
+      "match": "[{}();,]"
+    },
+    {
+      "name": "operator.sip",
+      "match": "[+\\-*/=<>!&|]"
+    }
+  ]
+}

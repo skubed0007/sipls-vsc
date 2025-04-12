@@ -1,157 +1,132 @@
 import * as vscode from "vscode";
 
 interface Snippet {
-  prefix: string[];
+  prefix: string;
   body: string[];
   description: string;
 }
 
-export async function activate(context: vscode.ExtensionContext) {
-  vscode.window.showInformationMessage("Neit Language Extension activated");
+// Cache for completion items
+const completionCache = new Map<string, vscode.CompletionItem[]>();
 
-  vscode.languages.registerCompletionItemProvider('neit', {
+// Pre-define snippets for better performance
+const snippets = new Map<string, Snippet>([
+  ["if", {
+    prefix: "if",
+    body: ["if (${1:condition}) {", "  ${0:body}", "}"],
+    description: "if statement"
+  }],
+  ["while", {
+    prefix: "while",
+    body: ["while (${1:condition}) {", "  ${0:body}", "}"],
+    description: "while loop"
+  }],
+  ["comment", {
+    prefix: "//",
+    body: ["// ${1:comment_text}"],
+    description: "Single line comment"
+  }],
+  ["block", {
+    prefix: "/*",
+    body: ["/* ${1:comment_block} */"],
+    description: "Block comment"
+  }],
+  ["let", {
+    prefix: "let",
+    body: ["let ${1:variable_name} @ ${2:variable_type} = ${3:value}"],
+    description: "Variable declaration"
+  }],
+  ["const", {
+    prefix: "const",
+    body: ["const ${1:constant_name} @ ${2:constant_type} = ${3:value}"],
+    description: "Constant declaration"
+  }],
+  ["global", {
+    prefix: "global",
+    body: ["global ${1:variable_name} @ ${2:variable_type} = ${3:value}"],
+    description: "Global variable declaration"
+  }],
+  ["fun", {
+    prefix: "fun",
+    body: ["fun ${1:function_name}(${2:params}) @ ${3:return_type} {", "  ${4:body}", "  ret ${5:return_value}", "}"],
+    description: "Function declaration"
+  }],
+  ["param", {
+    prefix: "param",
+    body: ["${1:type} ${2:param_name}"],
+    description: "Function parameter"
+  }],
+  ["assign", {
+    prefix: "=",
+    body: ["${1:variable_name} = ${2:new_value}"],
+    description: "Variable assignment"
+  }],
+  ["comp", {
+    prefix: "comp",
+    body: ["${1:left_operand} ${2|==,!=,<,<=,>,>=|} ${3:right_operand}"],
+    description: "Comparison"
+  }],
+  ["logic", {
+    prefix: "logic",
+    body: ["${1:left_operand} ${2|&&,||,!|} ${3:right_operand}"],
+    description: "Logical operator"
+  }]
+]);
+
+// Pre-compute common patterns for better performance
+const commonPatterns = {
+  lineEnd: /\s*$/,
+  wordEnd: /([a-zA-Z_]\w*)$/,
+  commentStart: /^\s*\/\//,
+  blockCommentStart: /^\s*\/\*/,
+  blockCommentEnd: /\*\//,
+  functionStart: /^\s*fun\b/,
+  constStart: /^\s*const\b/,
+  globalStart: /^\s*global\b/,
+  letStart: /^\s*let\b/
+};
+
+export function activate(context: vscode.ExtensionContext) {
+  vscode.window.showInformationMessage("Sip Language Extension activated");
+
+  // Register completion provider
+  const provider = vscode.languages.registerCompletionItemProvider('sip', {
     provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
-      const linePrefix = document.lineAt(position).text.substring(0, position.character);
+      const line = document.lineAt(position);
+      const linePrefix = line.text.substring(0, position.character);
+      
+      // Check cache first
+      const cached = completionCache.get(linePrefix);
+      if (cached) return cached;
 
-      const snippets: { [key: string]: Snippet } = {
-        "if": {
-          prefix: ["if"],
-          body: [
-            "if (${1:condition}) {",
-            "  ${0:body}",
-            "}"
-          ],
-          description: "if statement"
-        },
-        "while": {
-          prefix: ["while"],
-          body: [
-            "while (${1:condition}) {",
-            "  ${0:body}",
-            "}"
-          ],
-          description: "while loop"
-        },
-        "exit": {
-          prefix: ["exit"],
-          body: [
-            "exit ${1|ok,success,0,fail,failure,1,invalid arg,inv arg,128,not found,nf,127,permission err,perm err,permission denied,126,killed,kill,137,interrupt,int,signal int,130,segfault,seg,segmentation fault,11,out of range,range error,255|}"
-          ],
-          description: "exit statement with common exit codes"
-        },
-        "Single Line Comment": {
-          prefix: ["#"],
-          body: [
-            "# ${1:comment_text}"
-          ],
-          description: "Single line comment"
-        },
-        "Block Comment": {
-          prefix: ["##"],
-          body: [
-            "## ${1:comment_block} ##"
-          ],
-          description: "Block comment"
-        },
-        "Print": {
-          prefix: ["print"],
-          body: [
-            "print ${1:text}"
-          ],
-          description: "Print statement"
-        },
-        "Print Line": {
-          prefix: ["println"],
-          body: [
-            "println ${1:text}"
-          ],
-          description: "Print line statement"
-        },
-        "Variable Declaration": {
-          prefix: ["may"],
-          body: [
-            "may ${1:variable_name} = ${2:value}"
-          ],
-          description: "Variable declaration"
-        },
-        "Function Declaration": {
-          prefix: ["cmd"],
-          body: [
-            "cmd ${1:function_name} {",
-            "  (${2:parameters})",
-            "  ${0:body}",
-            "}"
-          ],
-          description: "Function declaration with parameters"
-        },
-        "Function Parameter": {
-          prefix: ["param"],
-          body: [
-            "${1:param_name}: ${2:type}"
-          ],
-          description: "Function parameter"
-        },
-        "Function Call": {
-          prefix: ["call"],
-          body: [
-            "${1:function_name}(${2:arguments})"
-          ],
-          description: "Function call"
-        },
-        "Take Input": {
-          prefix: ["takein"],
-          body: [
-            "takein(${1:variable_name})"
-          ],
-          description: "Take input from user"
-        },
-        "Variable Assignment": {
-          prefix: ["="],
-          body: [
-            "${1:variable_name} = ${2:value}"
-          ],
-          description: "Variable assignment"
-        },
-        "Reassign Variable": {
-          prefix: ["reassign"],
-          body: [
-            "${1:variable_name} = ${2:new_value}"
-          ],
-          description: "Reassign value to an existing variable"
-        },
-        "Comparison": {
-          prefix: ["comp"],
-          body: [
-            "${1:left_operand} ${2|==,!=,<,<=,>,>=|} ${3:right_operand}"
-          ],
-          description: "Comparison operation"
-        },
-        "Logical Operators": {
-          prefix: ["logic"],
-          body: [
-            "${1:left_operand} ${2|&&,||,!|} ${3:right_operand}"
-          ],
-          description: "Logical operator usage"
+      // Skip if we're in a comment
+      if (commonPatterns.commentStart.test(line.text) || 
+          (commonPatterns.blockCommentStart.test(line.text) && !commonPatterns.blockCommentEnd.test(line.text))) {
+        return [];
+      }
+
+      const items: vscode.CompletionItem[] = [];
+      
+      // Use for...of for better performance with Map
+      for (const [key, snippet] of snippets) {
+        if (linePrefix.endsWith(snippet.prefix)) {
+          const item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Snippet);
+          item.insertText = new vscode.SnippetString(snippet.body.join("\n"));
+          item.documentation = snippet.description;
+          items.push(item);
         }
-      };
+      }
 
-      const completionItems: vscode.CompletionItem[] = [];
-
-      Object.keys(snippets).forEach((key) => {
-        const snippet = snippets[key];
-        if (linePrefix.endsWith(snippet.prefix[0])) {
-          const completionItem = new vscode.CompletionItem(key, vscode.CompletionItemKind.Snippet);
-          completionItem.insertText = new vscode.SnippetString(snippet.body.join("\n"));
-          completionItem.documentation = snippet.description;
-          completionItems.push(completionItem);
-        }
-      });
-
-      return completionItems;
+      // Cache the results
+      completionCache.set(linePrefix, items);
+      return items;
     }
   });
+
+  context.subscriptions.push(provider);
 }
 
-export function deactivate(): Thenable<void> | undefined {
-  return undefined;
+export function deactivate() {
+  // Clear cache on deactivate
+  completionCache.clear();
 }
